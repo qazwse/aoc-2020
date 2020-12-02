@@ -17,12 +17,11 @@
          (char (getf criteria :char))
          (pw  (getf criteria :password))
          (c   (count char pw)))
-    (and (>= c min) (<= c max))))
+    (<= min c max)))
 
-(defun xor (pred-a pred-b)
-  (if (and pred-a pred-b)
-      nil
-      (or pred-a pred-b)))
+(defun xor (a b)
+  (and (not (and a b))
+       (or a b)))
 
 (defun valid-password-2? (criteria)
   (let ((p1 (1- (getf criteria :min)))
@@ -34,7 +33,7 @@
 
 ;; Part 1
 ;; 519
-(length (remove-if-not #'valid-password? (mapcar #'parse-input *problem-input*)))
+(count-if #'valid-password? (mapcar #'parse-input *problem-input*))
 ;; Part 2
 ;; 708
-(length (remove-if-not #'valid-password-2? (mapcar #'parse-input *problem-input*)))
+(count-if #'valid-password-2? (mapcar #'parse-input *problem-input*))
