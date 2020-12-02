@@ -10,13 +10,13 @@
   (coerce s 'character))
 
 (defun parse-input (input)
-  (ppcre:register-groups-bind ((#'parse-integer min max) (#'parse-char char) password)
+  (ppcre:register-groups-bind ((#'parse-integer n1 n2) (#'parse-char char) password)
       ("(\\d+)-(\\d+) (\\w): (\\w+)" input)
-    (list :min min :max max :char char :password password)))
+    (list :n1 n1 :n2 n2 :char char :password password)))
 
 (defun valid-password? (criteria)
-  (let* ((min (getf criteria :min))
-         (max (getf criteria :max))
+  (let* ((min (getf criteria :n1))
+         (max (getf criteria :n2))
          (char (getf criteria :char))
          (pw  (getf criteria :password))
          (c   (count char pw)))
@@ -27,8 +27,8 @@
        (or a b)))
 
 (defun valid-password-2? (criteria)
-  (let ((p1 (1- (getf criteria :min)))
-        (p2 (1- (getf criteria :max)))
+  (let ((p1 (1- (getf criteria :n1)))
+        (p2 (1- (getf criteria :n2)))
         (char (getf criteria :char))
         (pw (getf criteria :password)))
     (xor (equal char (char pw p1)) (equal char (char pw p2)))))
