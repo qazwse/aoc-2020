@@ -1,3 +1,5 @@
+;;;; Advent of Code - Day 1
+;;;; Report Repair
 (ql:quickload '(:alexandria))
 
 (defparameter *day1-test* (mapcar #'parse-integer (uiop:read-file-lines "day1-test")))
