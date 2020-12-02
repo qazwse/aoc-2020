@@ -6,10 +6,13 @@
 (defparameter *test-input* (uiop:read-file-lines "day2-test"))
 (defparameter *problem-input* (uiop:read-file-lines "day2-input"))
 
+(defun parse-char (s)
+  (coerce s 'character))
+
 (defun parse-input (input)
-  (ppcre:register-groups-bind (min max char password)
+  (ppcre:register-groups-bind ((#'parse-integer min max) (#'parse-char char) password)
       ("(\\d+)-(\\d+) (\\w): (\\w+)" input)
-    (list :min (parse-integer min) :max (parse-integer max) :char (coerce char 'character) :password password)))
+    (list :min min :max max :char char :password password)))
 
 (defun valid-password? (criteria)
   (let* ((min (getf criteria :min))
