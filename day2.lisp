@@ -30,6 +30,18 @@
   (destructuring-bind (p1 p2 char pw) criteria
     (xor (equal char (char pw (1- p1))) (equal char (char pw (1- p2))))))
 
+(defun faster-test (input)
+  (let ((count1 0)
+        (count2 0))
+    (dolist (c input (values count1 count2))
+       (ppcre:register-groups-bind ((#'parse-integer p1 p2) (#'parse-char char) pw)
+           (*regex* c)
+         (when (<= p1 (count char pw) p2)
+           (setf count1 (1+ count1)))
+         (when (xor (equal char (char pw (1- p1))) (equal char (char pw (1- p2))))
+           (setf count2 (1+ count2)))))))
+
+(time (faster-test *big-input*))
 
 
 ;; Part 1
@@ -37,4 +49,7 @@
 (count-if #'valid-password? (mapcar #'parse-input *problem-input*))
 ;; Part 2
 ;; 708
-(count-if #'valid-password-2? (mapcar #'parse-input *problem-input*))
+(time (count-if #'valid-password-2? (mapcar #'parse-input *big-input*)))
+
+;; P1-Big - 134116
+;; P2-Big - 201017
