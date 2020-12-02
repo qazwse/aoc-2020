@@ -2,9 +2,13 @@
 ;;;; Part 1 - Find passwords that don't match criteria
 
 (ql:quickload '(:cl-ppcre))
+;; (declaim (optimize (speed 0) (safety 0) (debug 3)))
 
 (defparameter *test-input* (uiop:read-file-lines "day2-test"))
 (defparameter *problem-input* (uiop:read-file-lines "day2-input"))
+(defparameter *big-input* (uiop:read-file-lines "day2-big"))
+
+(defvar *regex* (ppcre:create-scanner "(\\d+)-(\\d+) (\\w): (\\w+)"))
 
 (defun parse-char (s)
   (coerce s 'character))
