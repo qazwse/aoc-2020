@@ -2,7 +2,7 @@
 ;;;; Part 1 - Find passwords that don't match criteria
 
 (ql:quickload '(:cl-ppcre))
-;; (declaim (optimize (speed 0) (safety 0) (debug 3)))
+;; (declaim (optimize (speed 3) (safety 0) (debug 0)))
 
 (defparameter *test-input* (uiop:read-file-lines "day2-test"))
 (defparameter *problem-input* (uiop:read-file-lines "day2-input"))
