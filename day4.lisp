@@ -4,6 +4,8 @@
 (use-package :iterate)
 (declaim (optimize (speed 0) (safety 0) (debug 3)))
 
+(defparameter *passport-flags* '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"))
+(defparameter *optional-flag* '("cid"))
 
 (defun parse-input (input)
   (iter
@@ -14,9 +16,7 @@
           (until (equal line ""))
           (accumulate line :by (lambda (x y) (uiop:strcat x " " y)) :initial-value "")))))
 
-
 (defun valid-passport (passport)
-  (print passport)
   (let ((len (count #\  passport)))
     (cond
       ((= len 6) t)
