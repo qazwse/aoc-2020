@@ -1,81 +1,101 @@
-;;;; Day 4
-
 (ql:quickload '(:alexandria :cl-ppcre :iterate :str :binding-arrows))
-(use-package :iterate)
 (use-package :binding-arrows)
-(declaim (optimize (speed 0) (safety 0) (debug 3)))
 
-(defconstant +passport-flags+ '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"))
+(defconstant +passport-flags+ '(:byr :iyr :eyr :hgt :hcl :ecl :pid :cid))
+(defconstant +required-flags+ '(:byr :iyr :eyr :hgt :hcl :ecl :pid))
 
-(defun parse-input (input)
-  (iter
-    (until (not input))
-    (collect
-        (iter (for line = (pop input))
-          (until (not line))
-          (until (equal line ""))
-          (accumulate line :by (lambda (x y) (uiop:strcat x " " y)))))))
+(defun has-reqd-fields? (passport)
+  "Make sure the passport has all of the required fields."
+  (let ((flags (mapcar #'first passport)))
+    (every (lambda (req) (find req flags :test #'equal)) +required-flags+)))
 
-(defun byr (year)
-  (<= 1920 (parse-integer year) 2002))
+|=
+(has-reqd-fields? '((:ecl "gry")
+                    (:pid "860033327")
+                    (:eyr "2020")
+                    (:hcl "#fffffd")
+                    (:byr "1937")
+                    (:iyr "2017")
+                    (:cid "147")
+                    (:hgt "183cm")))
+=|
 
-(defun iyr (year)
-  (<= 2010 (parse-integer year) 2020))
+(defun between (min max val)
+  (<= min val max))
 
-(defun eyr (year)
-  (<= 2020 (parse-integer year) 2030))
-
-(defun hgt (height)
+(defun parse-height (height)
   (let ((cm (search "cm" height))
         (in (search "in" height)))
-    (cond (cm (<= 150 (parse-integer (subseq height 0 cm)) 193))
-          (in (<= 59  (parse-integer (subseq height 0 in))  76))
-          (t nil))))
+    (cond (cm (between 150 193 (parse-integer (subseq height 0 cm))))
+          (in (between 59  76  (parse-integer (subseq height 0 in))))
+          (:otherwise nil))))
 
-(defun hcl (colour)
-  (when (ppcre:scan "^\\#[0-9a-fA-F]{6}$" colour)
-    t))
+(defun passport-dispatch (field)
+  (destructuring-bind (flag val) field
+    (case flag
+      (:byr (between 1920 2002 (parse-integer val)))
+      (:iyr (between 2010 2020 (parse-integer val)))
+      (:eyr (between 2020 2030 (parse-integer val)))
+      (:hgt (parse-height val))
+      (:hcl (ppcre:scan "^\\#[0-9a-fA-F]{6}$" val))
+      (:ecl (ppcre:scan "amb|blu|brn|gry|grn|hzl|oth" val))
+      (:pid (ppcre:scan "^\\d{9}$" val))
+      (:cid t))))
 
-(defun ecl (colour)
-  (when (search colour "amb blu brn gry grn hzl oth")
-    t))
+(defun has-valid-info? (passport)
+  (every #'passport-dispatch passport))
 
-(defun pid (pid)
-  (when (ppcre:scan "^\\d{9}$" pid)
-    t))
-
-(defun cid (cid)
-  t)
-
-(defun get-function (fn-name)
-  (symbol-function (find-symbol (string-upcase fn-name))))
-
-(defun valid-information? (passport)
-  (iter
-    (for flag in (str:split " " passport))
-    (for split = (str:split ":" flag))
-    (for res = (funcall (get-function (first split)) (second split)))
-    (collect res into truths)
-    (finally (return (reduce #'(lambda (x y) (and x y)) truths)))))
-
-(defun has-fields? (passport)
-  (->> (mapcar #'(lambda (key) (str:contains? key passport)) +passport-flags+)
-    (reduce #'(lambda (x y) (and x y)))))
+|=
+(has-valid-info?  '((:ecl "gry")
+                    (:pid "860033327")
+                    (:eyr "2020")
+                    (:hcl "#fffffd")
+                    (:byr "1937")
+                    (:iyr "2017")
+                    (:cid "147")
+                    (:hgt "183cm")))
+=|
 
 (defun valid-passport? (passport)
+  "Passport is list of parameters. Parameters are a list,
+1st parameter is the key, second is the value.
+There are two checks:
+1: Are all of the necessary parameters present?
+2: Are all of the values valid?"
   (and
-   (has-fields? passport)
-   (valid-information? passport)))
+   (has-reqd-fields? passport)
+   (has-valid-info?  passport)))
 
-(defun error-logger (passport)
-  (when (valid-passport? passport)
-    (print passport)))
+(defun symbolize (s)
+  "Turn a string into a keyword"
+  (intern (string-upcase s) (find-package :keyword)))
+
+(defun create-passport (passport-str)
+  "Creates list of parameters from passport string. Format ((par val) (par val) ...)
+We don't do any checks at this point, just take in all the data."
+  (->> passport-str
+    (str:split " ")
+    (mapcar (lambda (s) (str:split ":" s)))
+    (mapcar (lambda (s) (list (symbolize (first s)) (second s))))))
+
+(defun read-input (filename)
+  "Read in our input, return passports as list passports."
+  (let ((nlnl (coerce '(#\Newline #\Newline) 'string)) ; Each passport is seperated by an empty line
+        (nl (coerce '(#\Newline) 'string)))            ; and I don't know how to replace 2 chars
+    (->> filename
+      (uiop:read-file-string)
+      (str:trim)
+      (str:split nlnl)
+      (mapcar (lambda (s) (str:replace-all nl " " s)))
+      (mapcar #'create-passport))))
 
 (defun day4-solver (filename)
   (->> filename
-    uiop:read-file-lines
-    parse-input
-    (mapcar #'str:trim)
+    read-input
     (count-if #'valid-passport?)))
 
+(day4-solver "day4-test")
 (day4-solver "day4-input")
+
+
+; (= (length (read-input "day4-test")) 12)
