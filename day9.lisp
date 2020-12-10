@@ -30,7 +30,6 @@
       (finally (return (values (first invalid) (coerce (reverse raw-data) 'vector)))))))
 
 (defun p2-answer (data)
-  (print (reduce #'+ data))
   (iter (for i in-vector data)
     (maximize i into max)
     (minimize i into min)
@@ -56,5 +55,5 @@
     (format t "Part 2: Answer: ~A~%" (solve-p2 data invalid))))
 
 ;(day9-solver "day9-test" 5)
-;(day9-solver "day9-input" 25)
+;(time (day9-solver "day9-input" 25))
 ; (declaim (optimize (speed 3) (safety 0) (debug 0)))
