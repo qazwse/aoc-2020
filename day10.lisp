@@ -41,14 +41,14 @@
      (setf (gethash (first curr) memos) c)
      (return c))))
 
-(defun day10-solver (filename)
+(defun day10-solver (filename jump)
   (let* ((raw-data (uiop:read-file-lines filename))
          (int-data (mapcar #'parse-integer raw-data))
          (sorted-data (sort int-data #'<))
          (sorted-data (append sorted-data (list (+ 3 (a:lastcar sorted-data))))))
-    (format t "Part 1: ~A~%" (p1-solver sorted-data))
-    (format t "Part 2: ~A~%" (p2-solver sorted-data 3))))
+    (format t "Part 1: ~A~%" (p1-solver-new sorted-data jump))
+    (format t "Part 2: ~A~%" (p2-solver sorted-data jump))))
 
-;(time (day10-solver "day10-input")) - 66,28
-;(day10-solver "day10-test")
-;(day10-solver "day10-test2")
+;(time (day10-solver "day10-input" 3)) - 66,28
+;(day10-solver "day10-test" 3)
+;(day10-solver "day10-test2" 3)
