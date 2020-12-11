@@ -11,7 +11,7 @@
     (iter outer
       (for i from 0 below height)
       (iter (for j from 0 below length)
-        (in outer (count (eql :taken (aref floorplan i j))))))))
+        (in outer (count (eq :taken (aref floorplan i j))))))))
 
 (defun count-neighbours-radial (floorplan y x height length)
   (iter outer
@@ -31,9 +31,9 @@
                    (until (or (< i2 0) (>= i2 height)
                               (< j2 0) (>= j2 length)))
                    (for seat = (aref floorplan i2 j2))
-                   (when (eql :taken seat)
+                   (when (eq :taken seat)
                      (leave t))
-                   (when (eql :empty seat)
+                   (when (eq :empty seat)
                      (leave nil))))))))
 
 (defun count-neighbours (floorplan y x height length)
@@ -45,7 +45,7 @@
                 (< j 0) (>= j length)
                 (and (= i y) (= j x)))
         (next-iteration))
-      (in outer (count (eql :taken (aref floorplan i j)))))))
+      (in outer (count (eq :taken (aref floorplan i j)))))))
 
 (defun update-floorplan (floorplan neighbour-check limit)
   (destructuring-bind (height length) (array-dimensions floorplan)
