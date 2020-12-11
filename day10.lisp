@@ -18,7 +18,16 @@
     ;(format t "~A ~A ~A~%" n prev-n diff)
     (finally (return (list ones twos threes)))))
 
-(defun p2-solver (data window &optional (curr '(0)) (memos (make-hash-table :size 1000 :test #'eq)))
+(defun p1-solver-new (data jump)
+  (iter (with result = (make-array jump :initial-element 0))
+    (for n in data)
+    (for prev-n previous n initially 0)
+    (for diff = (- n prev-n))
+    (incf (aref result diff))
+    (finally
+     (return (* (aref result 1) (aref result 3))))))
+
+(defun p2-solver (data window &optional (curr '(0)) (memos (make-hash-table :size (a:lastcar data) :test #'eq)))
   (when (not data)
     (return-from p2-solver 1))
   (when (gethash (first curr) memos)
