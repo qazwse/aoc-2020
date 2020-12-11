@@ -30,12 +30,12 @@
      (return c))))
 
 (defun day10-solver (filename jump)
-  (let* ((raw-data (uiop:read-file-lines filename))
-         (int-data (mapcar #'parse-integer raw-data))
-         (sorted-data (sort int-data #'<))
-         (sorted-data (append sorted-data (list (+ 3 (a:lastcar sorted-data))))))
-    (format t "Part 1: ~A~%" (p1-solver-new sorted-data jump))
-    (format t "Part 2: ~A~%" (p2-solver sorted-data jump))))
+  (let* ((data (as-> (uiop:read-file-lines filename) d
+                (mapcar #'parse-integer d)
+                (sort d #'<)
+                (append d (list (+ 3 (a:lastcar d)))))))
+    (format t "Part 1: ~A~%" (p1-solver-new data jump))
+    (format t "Part 2: ~A~%" (p2-solver data jump))))
 
 ;(time (day10-solver "day10-input" 3)) - 66,28
 ;(day10-solver "day10-test" 3)
