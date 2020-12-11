@@ -6,7 +6,7 @@
 
 (in-package :day10)
 
-(defun p1-solver-new (data jump)
+(defun p1-solver (data jump)
   (iter (with result = (make-array (1+ jump) :initial-element 0))
     (for n in data)
     (for prev-n previous n initially 0)
