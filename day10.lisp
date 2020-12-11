@@ -6,20 +6,8 @@
 
 (in-package :day10)
 
-(defun p1-solver (data)
-  (iter
-    (for n in data)
-    (for prev-n previous n initially 0)
-    (for diff = (- n prev-n))
-    (case diff
-      (1 (counting n into ones))
-      (2 (counting n into twos))
-      (3 (counting n into threes)))
-    ;(format t "~A ~A ~A~%" n prev-n diff)
-    (finally (return (list ones twos threes)))))
-
 (defun p1-solver-new (data jump)
-  (iter (with result = (make-array jump :initial-element 0))
+  (iter (with result = (make-array (1+ jump) :initial-element 0))
     (for n in data)
     (for prev-n previous n initially 0)
     (for diff = (- n prev-n))
