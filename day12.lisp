@@ -13,11 +13,11 @@
       (aref headings (mod (+ cur-abs (/ rot 90))  4))
       (aref headings (mod (+ cur-abs (/ rot -90)) 4)))))
 
-(defun p1-solver (data)
+(defun p1-solver (filename)
   (let ((heading #\E)
         (dist (cons 0 0))
         (new '()))
-    (dolist (instr data)
+    (iterate ((instr (scan-file filename #'read-line)))
      (let ((code (aref instr 0))
            (val (parse-integer (subseq instr 1))))
         (case code
@@ -48,10 +48,8 @@
      (round (+ (* (- sin-rad) x)
                (* cos-rad y))))))
 
-(defun day12-solver (filename)
-  (let* ((data (uiop:read-file-lines filename)))
-    ;(format t "P1: ~A~%" (p1-solver data))
-    (format t "P2: ~A~%" (p2-solver data))))
+(defun rotate-xy-l (pt theta))
+
 
 (defun p2-solver (filename)
   (let ((dist (cons 0 0))
@@ -70,9 +68,9 @@
           (#\W (setf (car wp) (- (car wp) val))))))
     (+ (abs (car dist)) (abs (cdr dist)))))
 
-
-(time (p1-solver *data*))
-(time (p2-solver "day12-bb1"))
+(defun day12-solver (filename)
+  (format t "P1: ~A~%" (p1-solver filename))
+  (format t "P2: ~A~%" (p2-solver filename)))
 
 ;(time (day12-solver "day12-bb1"))
 
