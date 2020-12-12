@@ -3,3 +3,7 @@
 /10testc
 /day11-big.py
 /bigboy.txt
+*.fasl
+*.py
+/day11-series.lisp
+*bb*
