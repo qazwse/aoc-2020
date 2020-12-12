@@ -76,4 +76,4 @@
     (format t "Part 1: ~A~%" (solver data-array #'count-neighbours 4))
     (format t "Part 2: ~A~%" (solver data-array #'count-neighbours-radial 5))))
 
-(time (day11-solver "day11-big"))
+(time (day11-solver "day11-input"))
