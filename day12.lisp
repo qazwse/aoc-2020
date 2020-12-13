@@ -36,7 +36,7 @@
           (#\W (setf (car dist) (- (car dist) val))))))
     (+ (abs (car dist)) (abs (cdr dist)))))
 
-(defun rotate-xy (pt theta)
+(defun rotate-xy-slow (pt theta)
   (let* ((rad (* pi (/ theta 180.0)))
          (x (car pt))
          (y (cdr pt))
@@ -48,8 +48,15 @@
      (round (+ (* (- sin-rad) x)
                (* cos-rad y))))))
 
-(defun rotate-xy-l (pt theta))
-
+(defun rotate-xy (pt theta)
+  (let ((theta (mod theta 360))
+        (x (car pt))
+        (y (cdr pt)))
+    (case theta
+      (90  (cons    y  (- x)))
+      (180 (cons (- x) (- y)))
+      (270 (cons (- y)    x))
+      (otherwise pt))))
 
 (defun p2-solver (filename)
   (let ((dist (cons 0 0))
@@ -58,8 +65,8 @@
       (let ((code (aref instr 0))
             (val (parse-integer (subseq instr 1))))
         (case code
-          (#\R (setf wp (rotate-xy wp val)))
-          (#\L (setf wp (rotate-xy wp (- val))))
+          (#\R (setf wp (rotate-xy-n wp val)))
+          (#\L (setf wp (rotate-xy-n wp (- val))))
           (#\F (setf (car dist) (+ (car dist) (* (car wp) val)))
                (setf (cdr dist) (+ (cdr dist) (* (cdr wp) val))))
           (#\N (setf (cdr wp) (+ (cdr wp) val)))
@@ -72,6 +79,6 @@
   (format t "P1: ~A~%" (p1-solver filename))
   (format t "P2: ~A~%" (p2-solver filename)))
 
-;(time (day12-solver "day12-bb1"))
+;(time (day12-solver "day12-input"))
 
 (declaim (optimize (speed 3) (safety 0) (debug 0)))
