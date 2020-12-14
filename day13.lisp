@@ -15,28 +15,32 @@
             (a:iota (length raw)))
     (remove-if #'(lambda (e) (null (car e))) raw)))
 
-(defun day13-solver (filename)
-  (->> filename
-    (parse-data)
-    (p2-solver)
-    (format t "Solved: ~A~%")))
-
-;(day13-solver "day13-input")
-;(day13-solver "day13-test2")
-
+(defun reorganize (data)
+  (let ((head (first data))
+        (rest (rest data)))
+    (cons head (sort rest #'(lambda (n1 n2) (> (car n1) (car n2)))))))
 
 (defun p2-solver (data &optional (start 1) (step 1))
   (when (not data)
     (return-from p2-solver start))
-  (format t "Finding ~A stepping ~A starting at ~A~%" (car (first data)) step start)
-  (let* ((n (- (car (first data))))
-         (a (- (cdr (first data))))
-         (step (abs step))
+  (format t "Finding ~a ~A stepping ~A starting at ~A~%" (car (first data)) (cdr (first data)) step start)
+  (let* ((n (car (first data)))
+         (a (cdr (first data)))
          (start (collect-first
-                 (choose-if (lambda (i) (= a (mod i n)))
+                 (choose-if (lambda (i) (zerop (mod (+ i a) n)))
                             (scan-range :from start :by step)))))
     (p2-solver (rest data) start (* step n))))
 
-(defun p2-solver-faster)
+(defun day13-solver (filename)
+  (->> filename
+    (parse-data)
+    (reorganize)
+    (p2-solver-old)
+    (format t "Solved: ~A~%")))
 
-(declaim (optimize (speed 0) (safety 0) (debug 3)))
+
+
+
+;(day13-solver "day13-input")
+;(day13-solver "day13-test2")
+(declaim (optimize (speed 3) (safety 0) (debug 0)))
