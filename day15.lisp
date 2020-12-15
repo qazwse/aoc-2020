@@ -34,7 +34,7 @@
       (setf (aref memory (pop num-list)) (1+ turn)))))
 
 (defun day15-solver (input end fn)
-  (let* ((memory (loop-memory input))
+  (let* ((memory (init-memory input))
          (turn   (1+ (length input))))
     (format t "Solution: ~A~%" (funcall fn end memory turn 0))))
 
