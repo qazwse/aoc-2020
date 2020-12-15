@@ -6,25 +6,37 @@
 
 (in-package :day15)
 
-(defun p1-solver (end memory turn curr)
+(defun solver-rec (end memory turn curr)
   (when (= turn end)
-    (return-from p1-solver curr))
-  (let* ((seen (gethash curr memory 0))
-         (next  (if (= seen 0)
+    (return-from solver-rec curr))
+  (let* ((seen (aref memory curr))
+         (next  (if (not seen)
                     0
                     (- turn seen))))
-    (setf (gethash curr memory) turn)
-    (p1-solver end memory (1+ turn) next)))
+    (setf (aref memory curr) turn)
+    (solver-rec end memory (1+ turn) next)))
+
+(defun solver-loop (end memory start first)
+  (iter
+    (for turn initially start then (1+ turn))
+    (for curr initially first then next)
+    (until (= turn end))
+    (for seen = (aref memory curr))
+    (for next = (if (not seen)
+                    0
+                    (- turn seen)))
+    (setf (aref memory curr) turn)
+    (finally (return curr))))
 
 (defun init-memory (num-list)
-  (let ((memory (make-hash-table :size 1000)))
+  (let ((memory (make-array '(30000000) :initial-element nil)))
     (dotimes (turn (length num-list) memory)
-      (setf (gethash (pop num-list) memory) (1+ turn)))))
+      (setf (aref memory (pop num-list)) (1+ turn)))))
 
-(defun day15-solver (input end)
-  (let* ((memory (init-memory input))
-         (turn   (1+ (hash-table-count memory))))
-    (format t "Solution: ~A~%" (p1-solver end memory turn 0))))
+(defun day15-solver (input end fn)
+  (let* ((memory (loop-memory input))
+         (turn   (1+ (length input))))
+    (format t "Solution: ~A~%" (funcall fn end memory turn 0))))
 
 ; Part1:
 ; (day15-solver '(1 3 2) 2020) -> 1
@@ -36,4 +48,5 @@
 ; (day15-solver '(9 12 1 4 17 0 18) 2020) -> 610
 ; Part2:
 ; (day15-solver '(1 3 2) 30000000) -> 2578
-; (day15-solver '(9 12 1 4 17 0 18) 30000000) -> 1407
+; (time (day15-solver '(9 12 1 4 17 0 18) 30000000 #'solver-loop)) -> 1407
+; (time (day15-solver '(9 12 1 4 17 0 18) 30000000 #'solver-rec)) -> 1407
