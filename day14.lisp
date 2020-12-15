@@ -71,4 +71,5 @@
     (format t "P1: ~A~%" (p1-solver data)) ; 13727901897109
     (format t "P2: ~A~%" (p2-solver data)))) ; 5579916171823
 
+; Do not run part 2 on test #1
 ;(time (day14-solver "day14-input"))
