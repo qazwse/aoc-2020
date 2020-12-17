@@ -28,13 +28,13 @@
     (setf (aref memory curr) turn)
     (finally (return curr))))
 
-(defun init-memory (num-list)
-  (let ((memory (make-array '(30000000) :initial-element nil)))
+(defun init-memory (num-list len)
+  (let ((memory (make-array len :initial-element nil)))
     (dotimes (turn (length num-list) memory)
       (setf (aref memory (pop num-list)) (1+ turn)))))
 
 (defun day15-solver (input end fn)
-  (let* ((memory (init-memory input))
+  (let* ((memory (init-memory input end))
          (turn   (1+ (length input))))
     (format t "Solution: ~A~%" (funcall fn end memory turn 0))))
 
